@@ -1,0 +1,42 @@
+diff --git a/index.cjs b/index.cjs
+index 5b666e0fea0eeda8409063673ee4896d07eab773..a44c7c3aea993d72f20931f6ce8eff92089ddc0a 100644
+--- a/index.cjs
++++ b/index.cjs
+@@ -2820,7 +2820,11 @@ function useIntersectionObserver(target, callback, options = {}) {
+           threshold
+         }
+       );
+-      targets2.forEach((el) => el && observer.observe(el));
++      targets2.forEach((el) => {
++        const unreffed = vueDemi.unref(el)
++        const _el = Array.isArray(unreffed) ? unreffed[0] : unreffed;
++        _el && observer.observe(_el)
++      });
+       cleanup = () => {
+         observer.disconnect();
+         cleanup = shared.noop;
+diff --git a/index.mjs b/index.mjs
+index 1da266d3ef2536a67a8a2f5dca17dca966674f03..53f1c4903bd4d5061ab892226c6bb59c6eb513c9 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -1,6 +1,6 @@
+ import { noop, makeDestructurable, camelize, toValue, isClient, tryOnScopeDispose, isIOS, tryOnMounted, computedWithControl, isObject, objectOmit, promiseTimeout, until, increaseWithUnit, objectEntries, useTimeoutFn, pausableWatch, toRef, createEventHook, timestamp, pausableFilter, watchIgnorable, debounceFilter, createFilterWrapper, bypassFilter, createSingletonPromise, toRefs, useIntervalFn, notNullish, containsProp, hasOwn, throttleFilter, useDebounceFn, useThrottleFn, clamp, syncRef, objectPick, tryOnUnmounted, watchWithFilter, identity, isDef } from '@vueuse/shared';
+ export * from '@vueuse/shared';
+-import { isRef, ref, shallowRef, watchEffect, computed, inject, isVue3, version, defineComponent, h, TransitionGroup, shallowReactive, Fragment, watch, getCurrentInstance, customRef, onUpdated, onMounted, readonly, nextTick, reactive, markRaw, getCurrentScope, isVue2, set, del, isReadonly, onBeforeUpdate } from 'vue-demi';
++import { isRef, ref, unref, shallowRef, watchEffect, computed, inject, isVue3, version, defineComponent, h, TransitionGroup, shallowReactive, Fragment, watch, getCurrentInstance, customRef, onUpdated, onMounted, readonly, nextTick, reactive, markRaw, getCurrentScope, isVue2, set, del, isReadonly, onBeforeUpdate } from 'vue-demi';
+ 
+ function computedAsync(evaluationCallback, initialState, optionsOrRef) {
+   let options;
+@@ -2819,7 +2819,11 @@ function useIntersectionObserver(target, callback, options = {}) {
+           threshold
+         }
+       );
+-      targets2.forEach((el) => el && observer.observe(el));
++      targets2.forEach((el) => {
++        const unreffed = unref(el)
++        const _el = Array.isArray(unreffed) ? unreffed[0] : unreffed;
++        _el && observer.observe(_el)
++      });
+       cleanup = () => {
+         observer.disconnect();
+         cleanup = noop;
